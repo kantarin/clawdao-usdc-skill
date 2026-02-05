@@ -17,7 +17,7 @@ from dataclasses import dataclass
 from web3 import Web3
 from dotenv import load_dotenv
 
-# โหลด environment variables
+# Load environment variables
 load_dotenv()
 
 # Logging setup
@@ -30,7 +30,7 @@ logger = logging.getLogger("USDC-Treasurer")
 
 @dataclass
 class Transaction:
-    """เก็บข้อมูลธุรกรรม"""
+    """Transaction data container"""
     tx_hash: str
     from_address: str
     to_address: str
@@ -43,10 +43,10 @@ class Transaction:
 class USDCTreasurer:
     """
     Agent-native USDC treasurer
-    จัดการ USDC testnet ผ่าน Telegram commands
+    Manage USDC testnet via Telegram commands
     """
     
-    # USDC Contract ABI (minimal - ใช้แค่ transfer และ balanceOf)
+    # USDC Contract ABI (minimal - includes transfer and balanceOf)
     USDC_ABI = [
         {
             "constant": True,
@@ -98,7 +98,7 @@ class USDCTreasurer:
         logger.info(f"USDC Treasurer initialized. Address: {self.address}")
     
     def load_data(self):
-        """โหลดข้อมูลธุรกรรมที่บันทึกไว้"""
+        """Load saved transaction history"""
         try:
             if os.path.exists(self.data_file):
                 with open(self.data_file, 'r') as f:
@@ -120,7 +120,7 @@ class USDCTreasurer:
             self.transactions = []
     
     def save_data(self):
-        """บันทึกข้อมูลธุรกรรม"""
+        """Save transaction history"""
         try:
             os.makedirs(os.path.dirname(self.data_file), exist_ok=True)
             data = {
@@ -144,8 +144,8 @@ class USDCTreasurer:
     
     async def get_balance(self, address: Optional[str] = None) -> Dict:
         """
-        เช็คยอด USDC
-        ถ้าไม่ระบุ address จะใช้ address ของตัวเอง
+        Check USDC balance.
+        Defaults to own address if none provided.
         """
         try:
             check_address = address or self.address
@@ -172,7 +172,7 @@ class USDCTreasurer:
     
     async def send_usdc(self, to_address: str, amount: float, note: Optional[str] = None) -> Dict:
         """
-        ส่ง USDC ไปยัง address อื่น
+        Send USDC to another address
         """
         try:
             if not self.private_key:
@@ -248,7 +248,7 @@ class USDCTreasurer:
             return {'error': str(e)}
     
     async def get_transaction_history(self, limit: int = 10) -> list:
-        """ดึงประวัติธุรกรรม"""
+        """Retrieve transaction history"""
         sorted_txs = sorted(
             self.transactions, 
             key=lambda x: x.timestamp, 
@@ -269,19 +269,19 @@ class USDCTreasurer:
     
     async def check_and_notify(self):
         """
-        Cron job: เช็คยอดและแจ้งเตือนถ้ามีเปลี่ยนแปลง
+        Cron job: Check balance and notify on changes
         """
         balance_info = await self.get_balance()
         if 'error' not in balance_info:
             logger.info(f"Balance check: {balance_info['balance']} USDC")
-            # สามารถเพิ่ม logic แจ้งเตือน Telegram ได้ที่นี่
+            # Optional: Add Telegram notification logic here
         return balance_info
 
 
 # OpenClaw Integration
 class OpenClawHandler:
     """
-    Handler สำหรับรับคำสั่งจาก OpenClaw/Telegram
+    Handler for OpenClaw/Telegram commands
     """
     
     def __init__(self):
@@ -289,7 +289,7 @@ class OpenClawHandler:
     
     async def handle_command(self, command: str, args: list) -> str:
         """
-        จัดการคำสั่งต่างๆ
+        Handle incoming commands
         """
         cmd = command.lower()
         
@@ -356,7 +356,7 @@ Available commands:
 Network: Sepolia Testnet"""
 
 
-# สำหรับรัน standalone
+# For standalone execution
 async def main():
     handler = OpenClawHandler()
     

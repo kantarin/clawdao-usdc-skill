@@ -19,5 +19,5 @@ environment:
 
 cron:
   - name: "check_balance"
-    schedule: "0 */6 * * *"  # ทุก 6 ชั่วโมง
+    schedule: "0 */6 * * *"  # Every 6 hours
     action: "check_and_notify"
