@@ -1,0 +1,23 @@
+name: usdc-treasurer
+version: 1.0.0
+description: "Autonomous USDC treasurer for OpenClaw - manage testnet USDC via Telegram"
+author: "piz2w"
+entry_point: treasurer.py
+
+dependencies:
+  - python-dotenv
+  - web3
+  - requests
+
+environment:
+  - USDC_TESTNET_RPC
+  - USDC_CONTRACT_ADDRESS
+  - PRIVATE_KEY
+  - TELEGRAM_BOT_TOKEN
+  - NOTION_API_KEY
+  - NOTION_DATABASE_ID
+
+cron:
+  - name: "check_balance"
+    schedule: "0 */6 * * *"  # ทุก 6 ชั่วโมง
+    action: "check_and_notify"
